@@ -1,237 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cargando Amor...</title>
-    <style>
-        :root {
-            --color-corazon: #ff4d6d;
-            --color-gris: #555555;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cargando con Amor 💖</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      /* Aquí llamamos a tu imagen personalizada */
+      background: url("fondito.png") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            background-color: #000; /* Fondo base negro */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    #loading-screen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      color: #fff;
+      /* Oscurece un poquito el fondo para que los corazones resalten */
+      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.4);
+    }
 
-        /* FONDO DE IMAGEN - Asegúrate que el archivo se llame fondo.png */
-        .background-image {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('fondo.png'); 
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.4); /* Oscurecemos la foto para ver lo demás */
-            z-index: -2;
-        }
+    .hearts-container {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
 
-        #canvas-petalos {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
+    .heart-box {
+      font-size: 55px;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      filter: grayscale(100%) brightness(40%);
+    }
 
-        .contenedor-carga {
-            position: relative;
-            z-index: 100;
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 40px;
-            border-radius: 20px;
-            border: 2px solid var(--color-corazon);
-            max-width: 90%;
-        }
+    #romantic-text {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
+      margin: 20px;
+      height: 40px;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+    }
 
-        .corazones-fila {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            justify-content: center;
-        }
+    #play-btn, #ready-btn {
+      padding: 18px 40px;
+      border: none;
+      border-radius: 50px;
+      background: linear-gradient(45deg, #ff7eb9, #ff1168);
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
+      z-index: 10;
+    }
 
-        .corazon {
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            fill: var(--color-gris); /* Empiezan grises */
-            transition: all 0.3s ease;
-        }
+    #play-btn:hover, #ready-btn:hover {
+      transform: scale(1.1);
+    }
 
-        #frase-romantica {
-            color: white;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            min-height: 1.5em;
-            font-family: 'Courier New', monospace;
-        }
-
-        #boton-listo {
-            display: none; /* Oculto hasta el final */
-            padding: 12px 30px;
-            font-size: 1.2rem;
-            background: var(--color-corazon);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            animation: latido 1.5s infinite;
-        }
-
-        #fade-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: black;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 1s;
-            z-index: 1000;
-        }
-
-        @keyframes latido {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-    </style>
+    canvas#petals {
+      position: absolute;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+  </style>
 </head>
 <body>
 
-    <div id="fade-overlay"></div>
-    <div class="background-image"></div>
-    <canvas id="canvas-petalos"></canvas>
-    
-    <audio id="musica" loop>
-        <source src="muzika.mp3" type="audio/mpeg">
-    </audio>
+  <audio id="bg-music" src="muzika.mp3" loop></audio>
 
-    <div class="contenedor-carga">
-        <div id="frase-romantica">Toca los corazones...</div>
-        
-        <div class="corazones-fila">
-            <svg class="corazon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5 22 12.28 18.6 15.36 13.45 20.03L12 21.35z"/></svg>
-            <svg class="corazon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5 22 12.28 18.6 15.36 13.45 20.03L12 21.35z"/></svg>
-            <svg class="corazon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5 22 12.28 18.6 15.36 13.45 20.03L12 21.35z"/></svg>
-            <svg class="corazon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5 22 12.28 18.6 15.36 13.45 20.03L12 21.35z"/></svg>
-            <svg class="corazon" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5 22 12.28 18.6 15.36 13.45 20.03L12 21.35z"/></svg>
-        </div>
+  <button id="play-btn">Empezar con Amor 💗</button>
 
-        <button id="boton-listo">¿Listo?</button>
+  <div id="loading-screen">
+    <div class="hearts-container">
+      <div class="heart-box" data-index="0">❤️</div>
+      <div class="heart-box" data-index="1">❤️</div>
+      <div class="heart-box" data-index="2">❤️</div>
+      <div class="heart-box" data-index="3">❤️</div>
+      <div class="heart-box" data-index="4">❤️</div>
     </div>
 
-    <script>
-        const frases = [
-            "Dibujando nuestra historia...",
-            "Recordando tu sonrisa...",
-            "Añadiendo momentos mágicos...",
-            "Preparando una sorpresa...",
-            "¡Todo listo, mi amor!"
-        ];
+    <div id="romantic-text"></div>
+    <button id="ready-btn" style="display:none;">¿Listo? 💞</button>
+  </div>
 
-        let clicsTotales = 0;
-        let musicaIniciada = false;
-        const totalClicksNeeded = 25;
-        const corazones = document.querySelectorAll('.corazon');
+  <canvas id="petals"></canvas>
 
-        corazones.forEach(corazon => {
-            corazon.addEventListener('click', () => {
-                // Iniciar música
-                if (!musicaIniciada) {
-                    const audio = document.getElementById('musica');
-                    audio.play().catch(() => console.log("Música esperando clic"));
-                    musicaIniciada = true;
-                }
+  <script>
+    const playBtn = document.getElementById("play-btn");
+    const loadingScreen = document.getElementById("loading-screen");
+    const bgMusic = document.getElementById("bg-music");
+    const hearts = document.querySelectorAll(".heart-box");
+    const romanticText = document.getElementById("romantic-text");
+    const readyBtn = document.getElementById("ready-btn");
 
-                if (clicsTotales < totalClicksNeeded) {
-                    clicsTotales++;
-                    
-                    // Índice del corazón actual (0 a 4)
-                    const i = Math.floor((clicsTotales - 1) / 5);
-                    const clicsEnEste = ((clicsTotales - 1) % 5) + 1;
-                    
-                    // Pintar gradualmente
-                    const opacidad = clicsEnEste * 20; 
-                    corazones[i].style.fill = `rgba(255, 77, 109, ${opacidad / 100})`;
-                    
-                    if (clicsEnEste === 5) {
-                        corazones[i].style.fill = "#ff4d6d";
-                        document.getElementById('frase-romantica').innerText = frases[i];
-                    }
+    const frases = [
+      "Eres mi razón para sonreír 💖",
+      "Tu amor es mi lugar favorito 🌹",
+      "Cada día contigo es especial 💫",
+      "Eres mi hoy y todos mis mañanas 💞",
+      "Te amo más de lo que imaginas 💘"
+    ];
 
-                    if (clicsTotales === totalClicksNeeded) {
-                        document.getElementById('boton-listo').style.display = "inline-block";
-                    }
-                }
-            });
+    let currentHeart = 0;
+    let clicks = 0;
+    const clicksPerHeart = 5;
+
+    playBtn.onclick = () => {
+      playBtn.style.display = "none";
+      loadingScreen.style.display = "flex";
+      bgMusic.play();
+      startPetals();
+    };
+
+    hearts.forEach((heart, index) => {
+      heart.onclick = () => {
+        if (index !== currentHeart) return;
+        clicks++;
+        
+        // Iluminación gradual de los emojis
+        let gray = 100 - (clicks * 20);
+        let bright = 40 + (clicks * 12);
+        heart.style.filter = `grayscale(${gray}%) brightness(${bright}%)`;
+        heart.style.transform = `scale(${1 + (clicks * 0.05)})`;
+
+        if (clicks === clicksPerHeart) {
+          heart.style.filter = `grayscale(0%) brightness(120%)`;
+          romanticText.innerText = frases[currentHeart];
+          romanticText.style.opacity = 1;
+
+          let tempIndex = currentHeart;
+          currentHeart = -1; 
+
+          setTimeout(() => {
+            romanticText.style.opacity = 0;
+            clicks = 0;
+            currentHeart = tempIndex + 1;
+            if (currentHeart === hearts.length) readyBtn.style.display = "block";
+          }, 2500);
+        }
+      };
+    });
+
+    function startPetals() {
+      const canvas = document.getElementById("petals");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      let pArray = [];
+      for(let i=0; i<45; i++) pArray.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*4+2, d:Math.random()*1.2+0.5, v:Math.random()*1-0.5});
+      
+      function draw() {
+        ctx.clearRect(0,0,canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(255, 192, 203, 0.8)";
+        pArray.forEach(p => {
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill();
+          p.y += p.d; p.x += p.v;
+          if(p.y > canvas.height) { p.y = -10; p.x = Math.random()*canvas.width; }
         });
-
-        // PÉTALOS (Canvas)
-        const canvas = document.getElementById('canvas-petalos');
-        const ctx = canvas.getContext('2d');
-        let petalos = [];
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        class Petalo {
-            constructor() { this.reset(); this.y = Math.random() * canvas.height; }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = -20;
-                this.size = Math.random() * 6 + 4;
-                this.speed = Math.random() * 1 + 0.5;
-            }
-            draw() {
-                this.y += this.speed;
-                if (this.y > canvas.height) this.reset();
-                ctx.fillStyle = "#ffb3c1";
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        for(let i=0; i<30; i++) petalos.push(new Petalo());
-
-        function animar() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            petalos.forEach(p => p.draw());
-            requestAnimationFrame(animar);
-        }
-        animar();
-
-        // BOTÓN FINAL
-        document.getElementById('boton-listo').addEventListener('click', () => {
-            const overlay = document.getElementById('fade-overlay');
-            overlay.style.visibility = "visible";
-            overlay.style.opacity = "1";
-            setTimeout(() => {
-                // Asegúrate de que el siguiente archivo se llame así:
-                window.location.href = "siguiente_nivel.html";
-            }, 1200);
-        });
-    </script>
+        requestAnimationFrame(draw);
+      }
+      draw();
+    }
+  </script>
 </body>
 </html>
