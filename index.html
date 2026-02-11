@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargando San Valentín...</title>
+    <style>
+        :root {
+            --color-corazon: #ff4d6d;
+            --color-gris: #3d3d3d;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            background-color: #000;
+        }
+
+        /* CAPA DE TRANSICIÓN FINAL */
+        #fade-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.5s ease;
+            z-index: 9999;
+        }
+
+        /* FONDO */
+        .background-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('fondo.png');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.5) blur(2px);
+            z-index: 0;
+            transform: scale(1.05);
+        }
+
+        #canvas-petalos {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .contenedor-carga {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 50px;
+            border-radius: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            transition: opacity 1s ease;
+        }
+
+        .corazones-fila {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .corazon {
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            fill: var(--color-gris);
+            filter: drop-shadow(0 0 5px rgba(0,0,0,1));
+        }
+
+        #frase-romantica {
+            color: #fff;
+            font-size: 1.
